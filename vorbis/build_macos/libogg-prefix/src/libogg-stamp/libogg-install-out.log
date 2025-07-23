@@ -1,0 +1,14 @@
+[100%] Built target ogg
+Install the project...
+-- Install configuration: "Release"
+-- Installing: /Users/ljh/音频编码算法研究/源码/compileScript/vorbis/build_macos/install_macos/lib/libogg.0.8.6.dylib
+-- Installing: /Users/ljh/音频编码算法研究/源码/compileScript/vorbis/build_macos/install_macos/lib/libogg.0.dylib
+-- Installing: /Users/ljh/音频编码算法研究/源码/compileScript/vorbis/build_macos/install_macos/lib/libogg.dylib
+-- Installing: /Users/ljh/音频编码算法研究/源码/compileScript/vorbis/build_macos/install_macos/include/ogg/config_types.h
+-- Installing: /Users/ljh/音频编码算法研究/源码/compileScript/vorbis/build_macos/install_macos/include/ogg/ogg.h
+-- Installing: /Users/ljh/音频编码算法研究/源码/compileScript/vorbis/build_macos/install_macos/include/ogg/os_types.h
+-- Installing: /Users/ljh/音频编码算法研究/源码/compileScript/vorbis/build_macos/install_macos/lib/cmake/Ogg/OggTargets.cmake
+-- Installing: /Users/ljh/音频编码算法研究/源码/compileScript/vorbis/build_macos/install_macos/lib/cmake/Ogg/OggTargets-release.cmake
+-- Installing: /Users/ljh/音频编码算法研究/源码/compileScript/vorbis/build_macos/install_macos/lib/cmake/Ogg/OggConfig.cmake
+-- Installing: /Users/ljh/音频编码算法研究/源码/compileScript/vorbis/build_macos/install_macos/lib/cmake/Ogg/OggConfigVersion.cmake
+-- Installing: /Users/ljh/音频编码算法研究/源码/compileScript/vorbis/build_macos/install_macos/lib/pkgconfig/ogg.pc

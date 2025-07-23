@@ -1,0 +1,43 @@
+{
+	"sources" : 
+	[
+		{
+			"file" : "/Users/ljh/\u97f3\u9891\u7f16\u7801\u7b97\u6cd5\u7814\u7a76/\u6e90\u7801/compileScript/vorbis/build_macos/CMakeFiles/libogg"
+		},
+		{
+			"file" : "/Users/ljh/\u97f3\u9891\u7f16\u7801\u7b97\u6cd5\u7814\u7a76/\u6e90\u7801/compileScript/vorbis/build_macos/CMakeFiles/libogg.rule"
+		},
+		{
+			"file" : "/Users/ljh/\u97f3\u9891\u7f16\u7801\u7b97\u6cd5\u7814\u7a76/\u6e90\u7801/compileScript/vorbis/build_macos/CMakeFiles/libogg-complete.rule"
+		},
+		{
+			"file" : "/Users/ljh/\u97f3\u9891\u7f16\u7801\u7b97\u6cd5\u7814\u7a76/\u6e90\u7801/compileScript/vorbis/build_macos/libogg-prefix/src/libogg-stamp/libogg-build.rule"
+		},
+		{
+			"file" : "/Users/ljh/\u97f3\u9891\u7f16\u7801\u7b97\u6cd5\u7814\u7a76/\u6e90\u7801/compileScript/vorbis/build_macos/libogg-prefix/src/libogg-stamp/libogg-configure.rule"
+		},
+		{
+			"file" : "/Users/ljh/\u97f3\u9891\u7f16\u7801\u7b97\u6cd5\u7814\u7a76/\u6e90\u7801/compileScript/vorbis/build_macos/libogg-prefix/src/libogg-stamp/libogg-download.rule"
+		},
+		{
+			"file" : "/Users/ljh/\u97f3\u9891\u7f16\u7801\u7b97\u6cd5\u7814\u7a76/\u6e90\u7801/compileScript/vorbis/build_macos/libogg-prefix/src/libogg-stamp/libogg-install.rule"
+		},
+		{
+			"file" : "/Users/ljh/\u97f3\u9891\u7f16\u7801\u7b97\u6cd5\u7814\u7a76/\u6e90\u7801/compileScript/vorbis/build_macos/libogg-prefix/src/libogg-stamp/libogg-mkdir.rule"
+		},
+		{
+			"file" : "/Users/ljh/\u97f3\u9891\u7f16\u7801\u7b97\u6cd5\u7814\u7a76/\u6e90\u7801/compileScript/vorbis/build_macos/libogg-prefix/src/libogg-stamp/libogg-patch.rule"
+		},
+		{
+			"file" : "/Users/ljh/\u97f3\u9891\u7f16\u7801\u7b97\u6cd5\u7814\u7a76/\u6e90\u7801/compileScript/vorbis/build_macos/libogg-prefix/src/libogg-stamp/libogg-update.rule"
+		}
+	],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"libogg"
+		],
+		"name" : "libogg"
+	}
+}

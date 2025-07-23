@@ -1,0 +1,24 @@
+# Hashes of file build rules.
+ed7f3f1621945cd9f7084df8f0674743 CMakeFiles/all_libs
+5376bd8370862d41161d0d064c5d5e8e CMakeFiles/clean_all
+ed7f3f1621945cd9f7084df8f0674743 CMakeFiles/libogg
+ec3d47f97055977e209e4901898cc95c CMakeFiles/libogg-complete
+ed7f3f1621945cd9f7084df8f0674743 CMakeFiles/libvorbis
+8f81130b68e0a7471b7299cbf70d21d2 CMakeFiles/libvorbis-complete
+ed7f3f1621945cd9f7084df8f0674743 CMakeFiles/ogg
+ed7f3f1621945cd9f7084df8f0674743 CMakeFiles/vorbis
+cfb87a5ef454c7e58064948214388bd0 libogg-prefix/src/libogg-stamp/libogg-build
+29f61166ced3ab58f931129ac32684a2 libogg-prefix/src/libogg-stamp/libogg-configure
+9bd0c9b95082993dadeadd399bb760b2 libogg-prefix/src/libogg-stamp/libogg-download
+0d2c0f252f168103b25c3e88fc8effde libogg-prefix/src/libogg-stamp/libogg-install
+1def09e9ca195735ab0f836433c5004b libogg-prefix/src/libogg-stamp/libogg-mkdir
+71376e6af84ed038aa0d67278cce2c74 libogg-prefix/src/libogg-stamp/libogg-patch
+30854d301c329573d83658a8cc28fa0d libogg-prefix/src/libogg-stamp/libogg-update
+e4c0ea15820945a3d97cb5de37e4b5f7 libvorbis-prefix/src/libvorbis-stamp/libvorbis-build
+7eefd202e6df2e3300b4fe25aa4ef48d libvorbis-prefix/src/libvorbis-stamp/libvorbis-configure
+09cdac1efb544ba1bdbc812ebd0c25c5 libvorbis-prefix/src/libvorbis-stamp/libvorbis-download
+02a84ead7ba390036ad34741f33b14e9 libvorbis-prefix/src/libvorbis-stamp/libvorbis-install
+aa886e9118a00644322b1c8b9355bba0 libvorbis-prefix/src/libvorbis-stamp/libvorbis-mkdir
+f73c0e07f546fd29a3607a317974bce4 libvorbis-prefix/src/libvorbis-stamp/libvorbis-patch
+5040041361c58c77ad3061ee1f12feb2 libvorbis-prefix/src/libvorbis-stamp/libvorbis-post_install
+acce5827c4156419bfcf72d63221fd8f libvorbis-prefix/src/libvorbis-stamp/libvorbis-update
