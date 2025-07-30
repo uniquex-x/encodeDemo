@@ -1,0 +1,6 @@
+/Users/ljh/音频编码算法研究/源码/compileScript/lame/lame-3.99.5/build/install/lib/libmp3lame.3.99.5.dylib
+/Users/ljh/音频编码算法研究/源码/compileScript/lame/lame-3.99.5/build/install/lib/libmp3lame.0.dylib
+/Users/ljh/音频编码算法研究/源码/compileScript/lame/lame-3.99.5/build/install/lib/libmp3lame.dylib
+/Users/ljh/音频编码算法研究/源码/compileScript/lame/lame-3.99.5/build/install/include/lame.h
+/Users/ljh/音频编码算法研究/源码/compileScript/lame/lame-3.99.5/build/install/bin/lame
+/Users/ljh/音频编码算法研究/源码/compileScript/lame/lame-3.99.5/build/install/share/man/man1/lame.1

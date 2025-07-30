@@ -1,0 +1,2 @@
+/usr/bin/ar qc liblamevector.a CMakeFiles/lamevector.dir/libmp3lame/vector/xmm_quantize_sub.c.o
+/usr/bin/ranlib liblamevector.a
