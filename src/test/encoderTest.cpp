@@ -7,11 +7,11 @@
 #include <sys/resource.h>
 #include <chrono>
 
-EncoderTest::EncoderTest() : testAudioFile("samples/natureStory.wav") {
+EncoderTest::EncoderTest(std::string testAudioFile_) : testAudioFile(testAudioFile_) {
     
 }
 
-EncoderTest::EncoderTest(EncoderType selectedEncoder) : testAudioFile("samples/natureStory.wav") {
+EncoderTest::EncoderTest(EncoderType selectedEncoder, std::string testAudioFile_) : testAudioFile(testAudioFile_) {
     encoder = encoderCreate(selectedEncoder);
 }
 

@@ -7,4 +7,12 @@ enum class EncoderType{
     LAME
 };
 
+//编码器参数上下文
+struct EncoderParamContext{
+    EncoderType encoderType;
+    int quality;
+};
+
+
+
 #endif

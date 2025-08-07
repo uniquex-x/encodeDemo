@@ -16,8 +16,8 @@ struct TestResult {
 
 class EncoderTest {
 public:
-    EncoderTest();
-    EncoderTest(EncoderType selectedEncoder);
+    EncoderTest(std::string testAudioFile_);
+    EncoderTest(EncoderType selectedEncoder, std::string testAudioFile_);
     ~EncoderTest();
 
     void testEncoder();
@@ -25,9 +25,8 @@ public:
     void compareEncoders();
     std::vector<TestResult> getResults() const { return results; }
 
-    std::unique_ptr<Encoder> encoderCreate(EncoderType selectedEncoder);
-    
 private:
+    std::unique_ptr<Encoder> encoderCreate(EncoderType selectedEncoder);
     void testSingleEncoder(EncoderType type);
     void printResults();
 

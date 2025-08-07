@@ -23,6 +23,9 @@ set(SOURCES
     vorbisEncoder.cpp
 )
 
+# 导出编译命令
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 # 创建可执行文件
 add_executable(audio_encoder_test ${SOURCES})
 
