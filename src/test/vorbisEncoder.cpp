@@ -20,31 +20,137 @@ void VorbisEncoder::setQuality(int quality) {
 
 bool VorbisEncoder::readWaveHeader(FILE* file, int& channels, long& sample_rate, 
                                   int& bits_per_sample, long& total_samples) {
-    char header[44];
-    if (fread(header, 1, 44, file) != 44) {
+    if (!file) {
         return false;
     }
+
+    // Save current file position
+    long original_pos = ftell(file);
     
-    // 检查WAVE文件头
-    if (strncmp(header, "RIFF", 4) != 0 || strncmp(header + 8, "WAVE", 4) != 0) {
+    // Read and validate RIFF header
+    struct RiffHeader {
+        char riff_id[4];        // "RIFF"
+        uint32_t file_size;     // File size minus 8 bytes
+        char wave_id[4];        // "WAVE"
+    } riff_header;
+
+    if (fread(&riff_header, sizeof(RiffHeader), 1, file) != 1) {
+        fseek(file, original_pos, SEEK_SET);
         return false;
     }
+
+    if (strncmp(riff_header.riff_id, "RIFF", 4) != 0 || 
+        strncmp(riff_header.wave_id, "WAVE", 4) != 0) {
+        fseek(file, original_pos, SEEK_SET);
+        return false;
+    }
+
+    bool found_fmt = false;
+    bool found_data = false;
     
-    // 读取音频参数
-    channels = *(unsigned short*)(header + 22);
-    sample_rate = *(unsigned int*)(header + 24);
-    bits_per_sample = *(unsigned short*)(header + 34);
-    
-    // 计算总样本数
-    unsigned int data_size = *(unsigned int*)(header + 40);
-    total_samples = data_size / (channels * bits_per_sample / 8);
-    
+    while (!found_data && !feof(file)) {
+        struct ChunkHeader {
+            char id[4];
+            uint32_t size;
+        } chunk_header;
+
+        if (fread(&chunk_header, sizeof(ChunkHeader), 1, file) != 1) {
+            break;
+        }
+
+        if (strncmp(chunk_header.id, "fmt ", 4) == 0) {
+            // Format chunk structure
+            struct FormatChunk {
+                uint16_t audio_format;      // 1 = PCM
+                uint16_t num_channels;      // Number of channels
+                uint32_t sample_rate;       // Sample rate
+                uint32_t byte_rate;         // Bytes per second
+                uint16_t block_align;       // Bytes per sample frame
+                uint16_t bits_per_sample;   // Bits per sample
+            } format_chunk;
+
+            if (chunk_header.size < sizeof(FormatChunk) ||
+                fread(&format_chunk, sizeof(FormatChunk), 1, file) != 1) {
+                break;
+            }
+
+            // Validate format
+            if (format_chunk.audio_format != 1) { // Only support PCM
+                break;
+            }
+
+            channels = format_chunk.num_channels;
+            sample_rate = format_chunk.sample_rate;
+            bits_per_sample = format_chunk.bits_per_sample;
+
+            // Validate parameters
+            if (channels <= 0 || channels > 8 ||
+                sample_rate <= 0 || sample_rate > 192000 ||
+                (bits_per_sample != 8 && bits_per_sample != 16 && bits_per_sample != 24 && bits_per_sample != 32)) {
+                break;
+            }
+
+            found_fmt = true;
+
+            // Skip remaining bytes in format chunk
+            if (chunk_header.size > sizeof(FormatChunk)) {
+                fseek(file, chunk_header.size - sizeof(FormatChunk), SEEK_CUR);
+            }
+        }
+        else if (strncmp(chunk_header.id, "data", 4) == 0) {
+            if (!found_fmt) {
+                break; // Format chunk must come first
+            }
+
+            uint32_t bytes_per_sample = (bits_per_sample / 8) * channels;
+            if (bytes_per_sample == 0) {
+                break;
+            }
+
+            total_samples = chunk_header.size / bytes_per_sample;
+            found_data = true;
+            
+            // Position is now at start of audio data
+        }
+        else {
+            // Skip unknown chunk
+            // Ensure even alignment (WAV standard)
+            uint32_t skip_size = (chunk_header.size % 2 == 0) ? 
+                                chunk_header.size : chunk_header.size + 1;
+            
+            if (fseek(file, skip_size, SEEK_CUR) != 0) {
+                break;
+            }
+        }
+    }
+
+    if (!found_fmt || !found_data) {
+        fseek(file, original_pos, SEEK_SET);
+        return false;
+    }
+
     return true;
 }
 
-EncodeResult VorbisEncoder::encode(const std::string& inputFile, const std::string& outputFile) {
+// 原有接口实现，保持兼容性
+EncodeResult VorbisEncoder::encode(const std::string& inputFile, const std::string& outputFile, void* userData) {
+    EncoderParamContext context;
+    context.encoderType = EncoderType::VORBIS;
+    context.quality = static_cast<int>((quality_ + 1.0f) * 5.0f); // 将-1.0到1.0映射回0-10
+    return encode(inputFile, outputFile, context);
+}
+
+// 新的带上下文参数的编码接口
+EncodeResult VorbisEncoder::encode(const std::string& inputFile, const std::string& outputFile, 
+                                  const EncoderParamContext& context) {
     EncodeResult result;
     result.success = false;
+    
+    // 根据上下文设置质量参数
+    int use_quality = context.quality;
+    if (context.encoderType == EncoderType::VORBIS) {
+        setQuality(use_quality);
+    }
     
     auto start_time = std::chrono::high_resolution_clock::now();
     

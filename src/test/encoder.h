@@ -3,6 +3,7 @@
 
 #include <string>
 #include <chrono>
+#include "EncoderInfo.h"
 
 struct EncodeResult {
     bool success;
@@ -17,9 +18,21 @@ struct EncodeResult {
 class Encoder {
 public:
     virtual ~Encoder() = default;
-    virtual EncodeResult encode(const std::string& inputFile, const std::string& outputFile) = 0;
+    
+    // 原有接口保持兼容性
+    virtual EncodeResult encode(const std::string& inputFile, const std::string& outputFile, void* userData = nullptr) = 0;
+    
+    // 新增支持编码上下文的接口
+    virtual EncodeResult encode(const std::string& inputFile, const std::string& outputFile, 
+                               const EncoderParamContext& context) = 0;
+    
     virtual std::string getEncoderName() const = 0;
     virtual void setQuality(int quality) = 0;  // 0-10, 10为最高质量
+    
+    // 获取编码器支持的参数范围信息
+    virtual std::string getQualityDescription() const = 0;
+    virtual int getMinQuality() const = 0;
+    virtual int getMaxQuality() const = 0;
 };
 
 #endif
