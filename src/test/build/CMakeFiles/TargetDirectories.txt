@@ -1,3 +1,0 @@
-/Users/ljh/音频编码算法研究/源码/compileScript/src/test/build/CMakeFiles/audio_encoder_test.dir
-/Users/ljh/音频编码算法研究/源码/compileScript/src/test/build/CMakeFiles/edit_cache.dir
-/Users/ljh/音频编码算法研究/源码/compileScript/src/test/build/CMakeFiles/rebuild_cache.dir
