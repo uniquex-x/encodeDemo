@@ -1,1 +1,0 @@
-/usr/bin/cc -fPIC -O3 -DNDEBUG -arch arm64 -dynamiclib -Wl,-headerpad_max_install_names -current_version 0.8.6 -o libogg.0.8.6.dylib -install_name @rpath/libogg.0.dylib CMakeFiles/ogg.dir/src/bitwise.c.o CMakeFiles/ogg.dir/src/framing.c.o

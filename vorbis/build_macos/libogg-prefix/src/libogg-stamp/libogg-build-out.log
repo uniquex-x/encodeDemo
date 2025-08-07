@@ -1,4 +1,0 @@
-[ 33%] Building C object CMakeFiles/ogg.dir/src/bitwise.c.o
-[ 66%] Building C object CMakeFiles/ogg.dir/src/framing.c.o
-[100%] Linking C shared library libogg.dylib
-[100%] Built target ogg

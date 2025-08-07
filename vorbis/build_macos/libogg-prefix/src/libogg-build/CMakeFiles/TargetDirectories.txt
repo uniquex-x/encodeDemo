@@ -1,9 +1,0 @@
-/Users/ljh/音频编码算法研究/源码/compileScript/vorbis/build_macos/libogg-prefix/src/libogg-build/CMakeFiles/ogg.dir
-/Users/ljh/音频编码算法研究/源码/compileScript/vorbis/build_macos/libogg-prefix/src/libogg-build/CMakeFiles/package.dir
-/Users/ljh/音频编码算法研究/源码/compileScript/vorbis/build_macos/libogg-prefix/src/libogg-build/CMakeFiles/package_source.dir
-/Users/ljh/音频编码算法研究/源码/compileScript/vorbis/build_macos/libogg-prefix/src/libogg-build/CMakeFiles/edit_cache.dir
-/Users/ljh/音频编码算法研究/源码/compileScript/vorbis/build_macos/libogg-prefix/src/libogg-build/CMakeFiles/rebuild_cache.dir
-/Users/ljh/音频编码算法研究/源码/compileScript/vorbis/build_macos/libogg-prefix/src/libogg-build/CMakeFiles/list_install_components.dir
-/Users/ljh/音频编码算法研究/源码/compileScript/vorbis/build_macos/libogg-prefix/src/libogg-build/CMakeFiles/install.dir
-/Users/ljh/音频编码算法研究/源码/compileScript/vorbis/build_macos/libogg-prefix/src/libogg-build/CMakeFiles/install/local.dir
-/Users/ljh/音频编码算法研究/源码/compileScript/vorbis/build_macos/libogg-prefix/src/libogg-build/CMakeFiles/install/strip.dir
