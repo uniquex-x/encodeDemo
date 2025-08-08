@@ -44,21 +44,21 @@ int getIntInput(const std::string& prompt, int min, int max) {
     }
 }
 
-void testAllEncoders(EncoderManager& encoderTest) {
+void testAllEncoders(EncoderManager& encoderManager) {
     std::cout << "\n=== 开始测试所有编码器 ===" << std::endl;
-    encoderTest.testAllEncoders();
+    encoderManager.testAllEncoders();
 }
 
-void testSingleEncoder(EncoderManager& encoderTest) {
+void testSingleEncoder(EncoderManager& encoderManager) {
     showEncoderMenu();
     int encoderChoice = getIntInput("", 1, 3);
     EncoderType type = getEncoderType(encoderChoice);
     
     // 显示编码器信息
-    encoderTest.showEncoderInfo(type);
+    encoderManager.showEncoderInfo(type);
     
     // 获取编码器实例以获取质量范围
-    auto tempEncoder = encoderTest.encoderCreate(type);
+    auto tempEncoder = encoderManager.encoderCreate(type);
     if (!tempEncoder) {
         std::cout << "无法创建编码器" << std::endl;
         return;
@@ -72,19 +72,19 @@ void testSingleEncoder(EncoderManager& encoderTest) {
                              minQuality, maxQuality);
     
     std::cout << "\n=== 开始测试单个编码器 ===" << std::endl;
-    encoderTest.testSingleEncoderWithParams(type, quality);
+    encoderManager.testSingleEncoderWithParams(type, quality);
 }
 
-void testQualityRange(EncoderManager& encoderTest) {
+void testQualityRange(EncoderManager& encoderManager) {
     showEncoderMenu();
     int encoderChoice = getIntInput("", 1, 3);
     EncoderType type = getEncoderType(encoderChoice);
     
     // 显示编码器信息
-    encoderTest.showEncoderInfo(type);
+    encoderManager.showEncoderInfo(type);
     
     // 获取编码器实例以获取质量范围
-    auto tempEncoder = encoderTest.encoderCreate(type);
+    auto tempEncoder = encoderManager.encoderCreate(type);
     if (!tempEncoder) {
         std::cout << "无法创建编码器" << std::endl;
         return;
@@ -100,11 +100,11 @@ void testQualityRange(EncoderManager& encoderTest) {
     int step = getIntInput("请输入测试步长 (默认1): ", 1, testMax - testMin + 1);
     
     std::cout << "\n=== 开始参数范围测试 ===" << std::endl;
-    encoderTest.testEncoderQualityRange(type, testMin, testMax, step);
+    encoderManager.testEncoderQualityRange(type, testMin, testMax, step);
 }
 
-void showEncodersInfo(EncoderManager& encoderTest) {
-    encoderTest.showAllEncodersInfo();
+void showEncodersInfo(EncoderManager& encoderManager) {
+    encoderManager.showAllEncodersInfo();
 }
 
 int main() {
@@ -116,7 +116,7 @@ int main() {
     std::cout << "测试音频文件: " << inputFile << std::endl;
 
     // 创建测试实例
-    EncoderManager encoderTest(inputFile);
+    EncoderManager encoderManager(inputFile);
     
     int choice;
     do {
@@ -125,16 +125,16 @@ int main() {
         
         switch (choice) {
             case 1:
-                testAllEncoders(encoderTest);
+                testAllEncoders(encoderManager);
                 break;
             case 2:
-                testSingleEncoder(encoderTest);
+                testSingleEncoder(encoderManager);
                 break;
             case 3:
-                testQualityRange(encoderTest);
+                testQualityRange(encoderManager);
                 break;
             case 4:
-                showEncodersInfo(encoderTest);
+                showEncodersInfo(encoderManager);
                 break;
             case 0:
                 std::cout << "程序退出。" << std::endl;

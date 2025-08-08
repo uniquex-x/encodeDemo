@@ -38,7 +38,7 @@ compileScript/
 │   └── test/               # 性能测试程序
 │       ├── samples/        # 测试音频样本
 │       ├── main.cpp        # 主程序入口
-│       ├── encoderTest.*   # 编码器测试框架
+│       ├── encoderManager.*   # 编码器测试框架
 │       ├── flacEncoder.*   # FLAC编码器实现
 │       ├── mp3Encoder.*    # MP3编码器实现
 │       ├── vorbisEncoder.* # Vorbis编码器实现
@@ -93,15 +93,15 @@ rm -rf build/  #清除编译文件
 **(2) 单个编码器测试**
 ```cpp
 // 示例：测试FLAC编码器，质量参数为8
-EncoderTest encoderTest("samples/natureStory.wav");
-encoderTest.testSingleEncoderWithParams(EncoderType::FLAC, 8);
+encoderManager encoderManager("samples/natureStory.wav");
+encoderManager.testSingleEncoderWithParams(EncoderType::FLAC, 8);
 ```
 
 **(3) 参数范围测试**
 ```cpp
 // 示例：测试MP3编码器质量参数0-9，步长为2
-EncoderTest encoderTest("samples/natureStory.wav");
-encoderTest.testEncoderQualityRange(EncoderType::LAME, 0, 9, 2);
+encoderManager encoderManager("samples/natureStory.wav");
+encoderManager.testEncoderQualityRange(EncoderType::LAME, 0, 9, 2);
 ```
 
 **(4) 编码上下文支持**
@@ -110,7 +110,7 @@ encoderTest.testEncoderQualityRange(EncoderType::LAME, 0, 9, 2);
 EncoderParamContext context;
 context.encoderType = EncoderType::VORBIS;
 context.quality = 6;
-encoderTest.testSingleEncoderWithContext(context);
+encoderManager.testSingleEncoderWithContext(context);
 ```
 
 ### 改进内容
