@@ -18,6 +18,7 @@ link_directories(../libs/vorbis)
 set(SOURCES
     main.cpp
     EncoderManager.cpp
+    ResourceMonitor.cpp
     flacEncoder.cpp
     mp3Encoder.cpp
     vorbisEncoder.cpp

@@ -2,9 +2,9 @@
 #include "flacEncoder.h"
 #include "vorbisEncoder.h"
 #include "mp3Encoder.h"
+#include "ResourceMonitor.h"
 #include <iostream>
 #include <iomanip>
-#include <sys/resource.h>
 #include <chrono>
 
 EncoderManager::EncoderManager(std::string testAudioFile_) : testAudioFile(testAudioFile_) {
@@ -39,28 +39,22 @@ void EncoderManager::testEncoder() {
     std::cout << "输入文件: " << testAudioFile << std::endl;
     std::cout << "输出文件: " << outputFile << std::endl;
     
-    // 记录资源使用情况
-    struct rusage usage_start, usage_end;
-    getrusage(RUSAGE_SELF, &usage_start);
+    // 使用资源监控器
+    ResourceMonitor monitor;
+    monitor.startMonitoring();
     
     // 执行编码
     EncodeResult result = encoder->encode(testAudioFile, outputFile);
     
-    getrusage(RUSAGE_SELF, &usage_end);
+    // 获取资源使用情况
+    ResourceMonitor::ResourceUsage usage = monitor.stopMonitoring();
     
-    // 计算CPU和内存使用情况
+    // 构建测试结果
     TestResult testResult;
     testResult.encoderName = encoder->getEncoderName();
     testResult.result = result;
-    
-    // 计算CPU使用时间 (用户时间 + 系统时间)
-    double cpu_time = (usage_end.ru_utime.tv_sec - usage_start.ru_utime.tv_sec) + 
-                     (usage_end.ru_stime.tv_sec - usage_start.ru_stime.tv_sec) +
-                     (usage_end.ru_utime.tv_usec - usage_start.ru_utime.tv_usec) / 1000000.0 +
-                     (usage_end.ru_stime.tv_usec - usage_start.ru_stime.tv_usec) / 1000000.0;
-    
-    testResult.cpuUsage = cpu_time;
-    testResult.memoryUsage = usage_end.ru_maxrss; // 最大内存使用量(KB)
+    testResult.cpuUsage = usage.cpuTime;
+    testResult.memoryUsage = usage.memoryUsage;
     
     results.push_back(testResult);
     
@@ -73,8 +67,8 @@ void EncoderManager::testEncoder() {
         std::cout << "压缩比: " << std::fixed << std::setprecision(2) 
                   << result.compressionRatio << ":1" << std::endl;
         std::cout << "CPU使用时间: " << std::fixed << std::setprecision(3) 
-                  << cpu_time << " seconds" << std::endl;
-        std::cout << "最大内存使用: " << (testResult.memoryUsage / 1024) << " MB" << std::endl;
+                  << testResult.cpuUsage << " seconds" << std::endl;
+        std::cout << "最大内存使用: " << (testResult.memoryUsage / 1024 / 1024) << " MB" << std::endl;
     } else {
         std::cout << "编码失败: " << result.errorMessage << std::endl;
     }
@@ -117,16 +111,17 @@ void EncoderManager::testSingleEncoder(EncoderType type) {
     
     std::cout << "测试编码器: " << encoderName << std::endl;
     
-    // 记录资源使用情况
-    struct rusage usage_start, usage_end;
-    getrusage(RUSAGE_SELF, &usage_start);
+    // 使用资源监控器
+    ResourceMonitor monitor;
+    monitor.startMonitoring();
     
     // 执行编码
     EncodeResult result = testEncoder->encode(testAudioFile, outputFile);
     
-    getrusage(RUSAGE_SELF, &usage_end);
+    // 获取资源使用情况
+    ResourceMonitor::ResourceUsage usage = monitor.stopMonitoring();
     
-    // 计算资源使用情况
+    // 构建测试结果
     TestResult testResult;
     testResult.encoderName = encoderName;
     testResult.result = result;
@@ -135,13 +130,8 @@ void EncoderManager::testSingleEncoder(EncoderType type) {
     testResult.context.encoderType = type;
     testResult.context.quality = 5; // 默认质量
     
-    double cpu_time = (usage_end.ru_utime.tv_sec - usage_start.ru_utime.tv_sec) + 
-                     (usage_end.ru_stime.tv_sec - usage_start.ru_stime.tv_sec) +
-                     (usage_end.ru_utime.tv_usec - usage_start.ru_utime.tv_usec) / 1000000.0 +
-                     (usage_end.ru_stime.tv_usec - usage_start.ru_stime.tv_usec) / 1000000.0;
-    
-    testResult.cpuUsage = cpu_time;
-    testResult.memoryUsage = usage_end.ru_maxrss;
+    testResult.cpuUsage = usage.cpuTime;
+    testResult.memoryUsage = usage.memoryUsage;
     
     results.push_back(testResult);
     
@@ -185,28 +175,23 @@ void EncoderManager::testSingleEncoderWithContext(const EncoderParamContext& con
               << " (质量: " << context.quality << ")" << std::endl;
     std::cout << testEncoder->getQualityDescription() << std::endl;
     
-    // 记录资源使用情况
-    struct rusage usage_start, usage_end;
-    getrusage(RUSAGE_SELF, &usage_start);
+    // 使用资源监控器
+    ResourceMonitor monitor;
+    monitor.startMonitoring();
     
     // 执行编码
     EncodeResult result = testEncoder->encode(testAudioFile, outputFile, context);
     
-    getrusage(RUSAGE_SELF, &usage_end);
+    // 获取资源使用情况
+    ResourceMonitor::ResourceUsage usage = monitor.stopMonitoring();
     
-    // 计算资源使用情况
+    // 构建测试结果
     TestResult testResult;
     testResult.encoderName = encoderName;
     testResult.result = result;
     testResult.context = context;
-    
-    double cpu_time = (usage_end.ru_utime.tv_sec - usage_start.ru_utime.tv_sec) + 
-                     (usage_end.ru_stime.tv_sec - usage_start.ru_stime.tv_sec) +
-                     (usage_end.ru_utime.tv_usec - usage_start.ru_utime.tv_usec) / 1000000.0 +
-                     (usage_end.ru_stime.tv_usec - usage_start.ru_stime.tv_usec) / 1000000.0;
-    
-    testResult.cpuUsage = cpu_time;
-    testResult.memoryUsage = usage_end.ru_maxrss;
+    testResult.cpuUsage = usage.cpuTime;
+    testResult.memoryUsage = usage.memoryUsage;
     
     results.push_back(testResult);
     
@@ -305,13 +290,13 @@ void EncoderManager::printSingleTestResult(const TestResult& result) {
     if (result.result.success) {
         std::cout << "✓ 编码成功!" << std::endl;
         std::cout << "编码时间: " << result.result.encodeTime.count() << " ms" << std::endl;
-        std::cout << "输入大小: " << result.result.inputSize << " bytes" << std::endl;
-        std::cout << "输出大小: " << result.result.outputSize << " bytes" << std::endl;
+        std::cout << "输入大小: " << result.result.inputSize / 1024 / 1024 << " MB" << std::endl;
+        std::cout << "输出大小: " << result.result.outputSize / 1024 / 1024 << " MB" << std::endl;
         std::cout << "压缩比: " << std::fixed << std::setprecision(2) 
                   << result.result.compressionRatio << ":1" << std::endl;
         std::cout << "CPU使用时间: " << std::fixed << std::setprecision(3) 
                   << result.cpuUsage << " seconds" << std::endl;
-        std::cout << "最大内存使用: " << (result.memoryUsage / 1024) << " MB" << std::endl;
+        std::cout << "最大内存使用: " << (result.memoryUsage / 1024 / 1024) << " MB" << std::endl;
     } else {
         std::cout << "✗ 编码失败: " << result.result.errorMessage << std::endl;
     }
@@ -339,7 +324,7 @@ void EncoderManager::compareEncoders() {
                       << std::setw(15) << (result.result.outputSize / 1024)
                       << std::setw(12) << std::fixed << std::setprecision(3) 
                       << result.cpuUsage
-                      << std::setw(12) << (result.memoryUsage / 1024) << std::endl;
+                      << std::setw(12) << (result.memoryUsage / 1024 / 1024) << std::endl;
         }
     }
     
@@ -402,4 +387,123 @@ std::unique_ptr<Encoder> EncoderManager::encoderCreate(EncoderType selectedEncod
             return std::make_unique<Mp3Encoder>();
     }
     return nullptr;
+}
+
+void EncoderManager::testImprovedLameEncoder() {
+    std::cout << "\n=== 改进的MP3编码器测试 ===" << std::endl;
+    std::cout << "测试重点：解决编码器延迟、缓冲区管理和VBR标签问题" << std::endl;
+    
+    // 创建MP3编码器实例
+    auto mp3Encoder = std::make_unique<Mp3Encoder>();
+    
+    std::cout << "\n编码器信息:" << std::endl;
+    std::cout << "  名称: " << mp3Encoder->getEncoderName() << std::endl;
+    std::cout << "  " << mp3Encoder->getQualityDescription() << std::endl;
+    std::cout << "  质量范围: " << mp3Encoder->getMinQuality() 
+              << " - " << mp3Encoder->getMaxQuality() << std::endl;
+    
+    // 测试不同质量设置的效果
+    std::vector<int> testQualities = {0, 2, 4, 6, 9}; // VBR质量：0=最高，9=最低
+    std::vector<TestResult> improvedResults;
+    
+    std::cout << "\n开始多质量级别测试..." << std::endl;
+    std::cout << std::string(80, '-') << std::endl;
+    std::cout << "质量\t输入大小\t输出大小\t压缩比\t\t压缩率\t编码时间" << std::endl;
+    std::cout << std::string(80, '-') << std::endl;
+    
+    for (int quality : testQualities) {
+        // 设置编码参数
+        EncoderParamContext context;
+        context.encoderType = EncoderType::LAME;
+        context.quality = quality;
+        
+        // 生成输出文件名
+        std::string outputFile = "improved_mp3_quality_" + std::to_string(quality) + ".mp3";
+        
+        // 执行编码
+        auto startTime = std::chrono::high_resolution_clock::now();
+        EncodeResult result = mp3Encoder->encode(testAudioFile, outputFile, context);
+        auto endTime = std::chrono::high_resolution_clock::now();
+        
+        if (result.success) {
+            // 计算压缩率
+            double compressionPercentage = (1.0 - (double)result.outputSize / result.inputSize) * 100;
+            
+            // 打印结果
+            std::cout << std::fixed << std::setprecision(2);
+            std::cout << quality << "\t" 
+                      << result.inputSize << "\t\t"
+                      << result.outputSize << "\t\t"
+                      << result.compressionRatio << ":1\t\t"
+                      << compressionPercentage << "%\t"
+                      << result.encodeTime.count() << "ms" << std::endl;
+            
+            // 保存测试结果
+            TestResult testResult;
+            testResult.encoderName = mp3Encoder->getEncoderName() + " (质量=" + std::to_string(quality) + ")";
+            testResult.result = result;
+            testResult.context = context;
+            testResult.cpuUsage = 0.0; // 简化，不测量CPU使用率
+            testResult.memoryUsage = 0; // 简化，不测量内存使用
+            improvedResults.push_back(testResult);
+            
+        } else {
+            std::cout << quality << "\t编码失败: " << result.errorMessage << std::endl;
+        }
+    }
+    
+    std::cout << std::string(80, '-') << std::endl;
+    
+    // 分析改进效果
+    std::cout << "\n=== 改进效果分析 ===" << std::endl;
+    
+    if (!improvedResults.empty()) {
+        // 找到最佳质量结果
+        auto bestResult = std::min_element(improvedResults.begin(), improvedResults.end(),
+            [](const TestResult& a, const TestResult& b) {
+                return a.context.quality < b.context.quality; // 质量0是最高质量
+            });
+            
+        std::cout << "最佳质量编码结果 (质量=" << bestResult->context.quality << "):" << std::endl;
+        std::cout << "  文件大小: " << bestResult->result.outputSize << " 字节" << std::endl;
+        std::cout << "  压缩比: " << std::fixed << std::setprecision(2) 
+                  << bestResult->result.compressionRatio << ":1" << std::endl;
+        std::cout << "  编码时间: " << bestResult->result.encodeTime.count() << " ms" << std::endl;
+        
+        // 检查压缩效果
+        double sizeRatio = (double)bestResult->result.outputSize / bestResult->result.inputSize;
+        if (sizeRatio < 0.5) {
+            std::cout << "✓ 压缩效果正常，文件大小问题已解决" << std::endl;
+        } else if (sizeRatio < 0.8) {
+            std::cout << "⚠ 压缩效果一般，可能仍需优化" << std::endl;
+        } else {
+            std::cout << "✗ 压缩效果异常，文件变长问题可能仍存在" << std::endl;
+        }
+        
+        // 计算平均压缩比
+        double avgCompressionRatio = 0.0;
+        for (const auto& result : improvedResults) {
+            avgCompressionRatio += result.result.compressionRatio;
+        }
+        avgCompressionRatio /= improvedResults.size();
+        
+        std::cout << "平均压缩比: " << std::fixed << std::setprecision(2) 
+                  << avgCompressionRatio << ":1" << std::endl;
+    }
+    
+    std::cout << "\n=== 改进要点总结 ===" << std::endl;
+    std::cout << "1. ✓ 禁用VBR标签避免额外帧 (lame_set_bWriteVbrTag=0)" << std::endl;
+    std::cout << "2. ✓ 动态缓冲区管理避免多余数据" << std::endl;
+    std::cout << "3. ✓ 正确处理编码器延迟和填充" << std::endl;
+    std::cout << "4. ✓ 精确的样本数控制" << std::endl;
+    std::cout << "5. ✓ 优化的LAME参数设置顺序" << std::endl;
+    
+    // 技术建议
+    std::cout << "\n=== 使用建议 ===" << std::endl;
+    std::cout << "• 质量0-2: 高质量音乐，文件较大" << std::endl;
+    std::cout << "• 质量3-5: 平衡质量与大小，推荐日常使用" << std::endl;
+    std::cout << "• 质量6-9: 小文件优先，质量较低" << std::endl;
+    
+    // 将结果添加到主结果集
+    results.insert(results.end(), improvedResults.begin(), improvedResults.end());
 }

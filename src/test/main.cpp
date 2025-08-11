@@ -9,8 +9,9 @@ void showMainMenu() {
     std::cout << "2. 测试单个编码器 (指定参数)" << std::endl;
     std::cout << "3. 编码器参数范围测试" << std::endl;
     std::cout << "4. 显示编码器信息" << std::endl;
+    std::cout << "5. 测试改进的MP3编码器" << std::endl;
     std::cout << "0. 退出程序" << std::endl;
-    std::cout << "请选择操作 (0-4): ";
+    std::cout << "请选择操作 (0-5): ";
 }
 
 void showEncoderMenu() {
@@ -121,7 +122,7 @@ int main() {
     int choice;
     do {
         showMainMenu();
-        choice = getIntInput("", 0, 4);
+        choice = getIntInput("", 0, 5);
         
         switch (choice) {
             case 1:
@@ -135,6 +136,11 @@ int main() {
                 break;
             case 4:
                 showEncodersInfo(encoderManager);
+                break;
+            case 5:
+                // 测试改进的MP3编码器
+                std::cout << "\n=== 开始测试改进的MP3编码器 ===" << std::endl;
+                encoderManager.testImprovedLameEncoder();
                 break;
             case 0:
                 std::cout << "程序退出。" << std::endl;

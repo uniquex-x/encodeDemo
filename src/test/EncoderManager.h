@@ -38,6 +38,9 @@ public:
     void showEncoderInfo(EncoderType type);
     void showAllEncodersInfo();
     
+    // 新增方法：测试改进的MP3编码器
+    void testImprovedLameEncoder();
+    
     // 工厂方法，创建编码器实例
     std::unique_ptr<Encoder> encoderCreate(EncoderType selectedEncoder);
 
