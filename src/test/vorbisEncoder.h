@@ -20,9 +20,9 @@ public:
     void setQuality(int quality) override;
     
     // 新增接口
-    std::string getQualityDescription() const override { return "质量参数 (0-10, 10为最高质量)"; }
+    std::string getQualityDescription() const override { return "质量参数 (0-11, 11为最高质量)"; }
     int getMinQuality() const override { return 0; }
-    int getMaxQuality() const override { return 10; }
+    int getMaxQuality() const override { return 11; }
 
 private:
     bool readWaveHeader(FILE* file, int& channels, long& sample_rate, 

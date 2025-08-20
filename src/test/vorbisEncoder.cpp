@@ -5,7 +5,7 @@
 #include <cstdlib>
 
 VorbisEncoder::VorbisEncoder() : quality_(0.4f) {
-    // 默认质量设置为0.4 (中等质量)
+    // 默认质量设置为0.4 (中等质量，在-0.1到1.0范围内)
 }
 
 VorbisEncoder::~VorbisEncoder() {
@@ -13,9 +13,18 @@ VorbisEncoder::~VorbisEncoder() {
 }
 
 void VorbisEncoder::setQuality(int quality) {
-    // 将0-10的质量等级映射到-1.0到1.0的范围
-    quality_ = (quality - 5) * 0.2f; // 5对应0.0, 0对应-1.0, 10对应1.0
-    quality_ = std::max(-1.0f, std::min(1.0f, quality_));
+    // 将0-11的质量等级映射到标准Vorbis质量等级
+    // 0->-0.1, 1->0.0, 2->0.1, ..., 11->1.0
+    if (quality == 0) {
+        quality_ = -0.1f;
+    } else if (quality >= 11) {
+        quality_ = 1.0f;
+    } else {
+        quality_ = (quality - 1) * 0.1f; // 1->0.0, 2->0.1, ..., 11->1.0
+    }
+    
+    // 确保在有效范围内
+    quality_ = std::max(-0.1f, std::min(1.0f, quality_));
 }
 
 bool VorbisEncoder::readWaveHeader(FILE* file, int& channels, long& sample_rate, 
@@ -136,7 +145,12 @@ bool VorbisEncoder::readWaveHeader(FILE* file, int& channels, long& sample_rate,
 EncodeResult VorbisEncoder::encode(const std::string& inputFile, const std::string& outputFile, void* userData) {
     EncoderParamContext context;
     context.encoderType = EncoderType::VORBIS;
-    context.quality = static_cast<int>((quality_ + 1.0f) * 5.0f); // 将-1.0到1.0映射回0-10
+    // 修正反向映射：将-0.1到1.0映射回0-11
+    if (quality_ == -0.1f) {
+        context.quality = 0;
+    } else {
+        context.quality = static_cast<int>(quality_ * 10.0f + 1.0f); // 0.0->1, 0.1->2, ..., 1.0->11
+    }
     return encode(inputFile, outputFile, context);
 }
 

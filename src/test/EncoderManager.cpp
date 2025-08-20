@@ -290,8 +290,8 @@ void EncoderManager::printSingleTestResult(const TestResult& result) {
     if (result.result.success) {
         std::cout << "✓ 编码成功!" << std::endl;
         std::cout << "编码时间: " << result.result.encodeTime.count() << " ms" << std::endl;
-        std::cout << "输入大小: " << result.result.inputSize / 1024 / 1024 << " MB" << std::endl;
-        std::cout << "输出大小: " << result.result.outputSize / 1024 / 1024 << " MB" << std::endl;
+        std::cout << "输入大小: " << (float)result.result.inputSize / 1024 / 1024 << " MB" << std::endl;
+        std::cout << "输出大小: " << (float)result.result.outputSize / 1024 / 1024 << " MB" << std::endl;
         std::cout << "压缩比: " << std::fixed << std::setprecision(2) 
                   << result.result.compressionRatio << ":1" << std::endl;
         std::cout << "CPU使用时间: " << std::fixed << std::setprecision(3) 
