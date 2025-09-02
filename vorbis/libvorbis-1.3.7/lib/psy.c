@@ -910,11 +910,154 @@ static float FLOOR1_fromdB_LOOKUP[256]={
   0.82788260F, 0.88168307F, 0.9389798F, 1.F,
 };
 
+/* Inverse lookup table for FLOOR1_fromdB */
+static float FLOOR1_fromdB_INV_LOOKUP[256]={
+  9.3874088e+06F, 8.8179420e+06F, 8.2822654e+06F, 7.7773505e+06F,
+  7.3003066e+06F, 6.8485931e+06F, 6.4199685e+06F, 6.0124283e+06F,
+  5.6242346e+06F, 5.2538959e+06F, 4.9001399e+06F, 4.5619069e+06F,
+  4.2382368e+06F, 3.9282595e+06F, 3.6312002e+06F, 3.3463590e+06F,
+  3.0730992e+06F, 2.8108414e+06F, 2.5590549e+06F, 2.3172574e+06F,
+  2.0850140e+06F, 1.8619278e+06F, 1.6476385e+06F, 1.4418237e+06F,
+  1.2441980e+06F, 1.0545122e+06F, 8.7254394e+05F, 6.9808455e+05F,
+  5.3091398e+05F, 3.7082170e+05F, 2.1760659e+05F, 7.1067492e+04F,
+  1.0000000e+00F, 1.0649863e+00F, 1.1341951e+00F, 1.2079015e+00F,
+  1.2863978e+00F, 1.3699951e+00F, 1.4590251e+00F, 1.5538408e+00F,
+  1.6548181e+00F, 1.7623575e+00F, 1.8768855e+00F, 1.9988561e+00F,
+  2.1287530e+00F, 2.2670913e+00F, 2.4144197e+00F, 2.5713223e+00F,
+  2.7384213e+00F, 2.9163793e+00F, 3.1059021e+00F, 3.3077411e+00F,
+  3.5226968e+00F, 3.7516214e+00F, 3.9954229e+00F, 4.2550680e+00F,
+  4.5315863e+00F, 4.8260743e+00F, 5.1396998e+00F, 5.4737065e+00F,
+  5.8294187e+00F, 6.2082472e+00F, 6.6116941e+00F, 7.0413592e+00F,
+  7.4989464e+00F, 7.9862701e+00F, 8.5052630e+00F, 9.0579828e+00F,
+  9.6466216e+00F, 1.0273513e+01F, 1.0941144e+01F, 1.1652161e+01F,
+  1.2409384e+01F, 1.3215816e+01F, 1.4074654e+01F, 1.4989305e+01F,
+  1.5963394e+01F, 1.7000785e+01F, 1.8105592e+01F, 1.9282195e+01F,
+  2.0535261e+01F, 2.1869758e+01F, 2.3290978e+01F, 2.4804557e+01F,
+  2.6416497e+01F, 2.8133190e+01F, 2.9961443e+01F, 3.1908506e+01F,
+  3.3982101e+01F, 3.6190449e+01F, 3.8542308e+01F, 4.1047004e+01F,
+  4.3714470e+01F, 4.6555282e+01F, 4.9580707e+01F, 5.2802740e+01F,
+  5.6234160e+01F, 5.9888572e+01F, 6.3780469e+01F, 6.7925283e+01F,
+  7.2339451e+01F, 7.7040476e+01F, 8.2047000e+01F, 8.7378876e+01F,
+  9.3057248e+01F, 9.9104632e+01F, 1.0554501e+02F, 1.1240392e+02F,
+  1.1970856e+02F, 1.2748789e+02F, 1.3577278e+02F, 1.4459606e+02F,
+  1.5399272e+02F, 1.6400004e+02F, 1.7465768e+02F, 1.8600792e+02F,
+  1.9809576e+02F, 2.1096914e+02F, 2.2467911e+02F, 2.3928002e+02F,
+  2.5482978e+02F, 2.7139006e+02F, 2.8902651e+02F, 3.0780908e+02F,
+  3.2781225e+02F, 3.4911534e+02F, 3.7180282e+02F, 3.9596466e+02F,
+  4.2169667e+02F, 4.4910090e+02F, 4.7828601e+02F, 5.0936773e+02F,
+  5.4246931e+02F, 5.7772202e+02F, 6.1526565e+02F, 6.5524908e+02F,
+  6.9783085e+02F, 7.4317983e+02F, 7.9147585e+02F, 8.4291040e+02F,
+  8.9768747e+02F, 9.5602426e+02F, 1.0181521e+03F, 1.0843174e+03F,
+  1.1547824e+03F, 1.2298267e+03F, 1.3097477e+03F, 1.3948625e+03F,
+  1.4855085e+03F, 1.5820453e+03F, 1.6848555e+03F, 1.7943469e+03F,
+  1.9109536e+03F, 2.0351382e+03F, 2.1673929e+03F, 2.3082423e+03F,
+  2.4582449e+03F, 2.6179955e+03F, 2.7881276e+03F, 2.9693158e+03F,
+  3.1622787e+03F, 3.3677814e+03F, 3.5866388e+03F, 3.8197188e+03F,
+  4.0679456e+03F, 4.3323036e+03F, 4.6138411e+03F, 4.9136745e+03F,
+  5.2329927e+03F, 5.5730621e+03F, 5.9352311e+03F, 6.3209358e+03F,
+  6.7317058e+03F, 7.1691700e+03F, 7.6350630e+03F, 8.1312324e+03F,
+  8.6596457e+03F, 9.2223983e+03F, 9.8217216e+03F, 1.0459992e+04F,
+  1.1139742e+04F, 1.1863665e+04F, 1.2634633e+04F, 1.3455702e+04F,
+  1.4330129e+04F, 1.5261382e+04F, 1.6253153e+04F, 1.7309374e+04F,
+  1.8434235e+04F, 1.9632195e+04F, 2.0908006e+04F, 2.2266726e+04F,
+  2.3713743e+04F, 2.5254795e+04F, 2.6895994e+04F, 2.8643847e+04F,
+  3.0505286e+04F, 3.2487691e+04F, 3.4598925e+04F, 3.6847358e+04F,
+  3.9241906e+04F, 4.1792066e+04F, 4.4507950e+04F, 4.7400328e+04F,
+  5.0480668e+04F, 5.3761186e+04F, 5.7254891e+04F, 6.0975636e+04F,
+  6.4938176e+04F, 6.9158225e+04F, 7.3652516e+04F, 7.8438871e+04F,
+  8.3536271e+04F, 8.8964928e+04F, 9.4746370e+04F, 1.0090352e+05F,
+  1.0746080e+05F, 1.1444421e+05F, 1.2188144e+05F, 1.2980198e+05F,
+  1.3823725e+05F, 1.4722068e+05F, 1.5678791e+05F, 1.6697687e+05F,
+  1.7782797e+05F, 1.8938423e+05F, 2.0169149e+05F, 2.1479854e+05F,
+  2.2875735e+05F, 2.4362330e+05F, 2.5945531e+05F, 2.7631618e+05F,
+  2.9427276e+05F, 3.1339626e+05F, 3.3376252e+05F, 3.5545228e+05F,
+  3.7855157e+05F, 4.0315199e+05F, 4.2935108e+05F, 4.5725273e+05F,
+  4.8696758e+05F, 5.1861348e+05F, 5.5231591e+05F, 5.8820850e+05F,
+  6.2643361e+05F, 6.6714279e+05F, 7.1049749e+05F, 7.5666962e+05F,
+  8.0584227e+05F, 8.5821044e+05F, 9.1398179e+05F, 9.7337747e+05F,
+};
+
+/* Hypot lookup table for distance calculations */
+static float hypot_lookup[64]={
+  0.0f, 1.0f, 1.414f, 1.732f, 2.0f, 2.236f, 2.449f, 2.646f,
+  2.828f, 3.0f, 3.162f, 3.317f, 3.464f, 3.606f, 3.742f, 3.873f,
+  4.0f, 4.123f, 4.243f, 4.359f, 4.472f, 4.583f, 4.690f, 4.796f,
+  4.899f, 5.0f, 5.099f, 5.196f, 5.292f, 5.385f, 5.477f, 5.568f,
+  5.657f, 5.745f, 5.831f, 5.916f, 6.0f, 6.083f, 6.164f, 6.245f,
+  6.325f, 6.403f, 6.481f, 6.557f, 6.633f, 6.708f, 6.782f, 6.856f,
+  6.928f, 7.0f, 7.071f, 7.141f, 7.211f, 7.280f, 7.348f, 7.416f,
+  7.483f, 7.550f, 7.616f, 7.681f, 7.746f, 7.810f, 7.874f, 7.937f
+};
+
 /* this is for per-channel noise normalization */
 static int apsort(const void *a, const void *b){
   float f1=**(float**)a;
   float f2=**(float**)b;
   return (f1<f2)-(f1>f2);
+}
+
+/* Improved stereo coupling functions */
+static void precomputed_couple_point(float premag,
+                                    int floorA, int floorB,
+                                    float *mag, float *ang){
+  
+  int test=(floorA>floorB)-1;
+  int offset=31-abs(floorA-floorB);
+  float floormag=hypot_lookup[((offset<0)-1)&offset]+1.f;
+  floormag*=FLOOR1_fromdB_INV_LOOKUP[(floorB&test)|(floorA&(~test))];
+  
+  *mag=premag*floormag;
+  /* let angel=0, means no diffuse imaging */
+  *ang=0.f;
+}
+
+/* lossless coupling function */
+static void couple_lossless(float *rM, float *rA, float *qM, float *qA){
+  /* Enhanced lossless coupling with high-frequency protection */
+  float mag = fabs(*rM) + fabs(*rA);
+  float ang = 0.0f;
+  
+  /* Preserve some angle information for high frequencies to reduce artifacts */
+  if(mag > 0.0f) {
+    ang = (*rA) / mag;
+    /* Limit angle to prevent excessive phase distortion */
+    if(ang > 0.5f) ang = 0.5f;
+    if(ang < -0.5f) ang = -0.5f;
+  }
+  
+  *rM = mag;
+  *rA = ang;
+  *qM = mag * mag;
+  *qA = ang * ang;
+}
+
+/* High-frequency boost mitigation function */
+static float hf_boost_mitigation(int j, int limit, int n, int rate) {
+  /* Calculate frequency for current bin */
+  float freq = (float)(j * rate) / (2.0f * n);
+  
+  /* Apply mitigation for frequencies above 14kHz */
+  if(freq > 14000.0f) {
+    float hf_factor = (freq - 14000.0f) / 2000.0f; /* 14kHz to 16kHz range */
+    if(hf_factor > 1.0f) hf_factor = 1.0f;
+    
+    /* Gradual attenuation factor (0.7 to 0.3) */
+    return 0.7f - 0.4f * hf_factor;
+  }
+  
+  return 1.0f; /* No mitigation below 14kHz */
+}
+
+/* Advanced stereo width preservation for high frequencies */
+static void preserve_stereo_width(float *mag, float *ang, float freq, float width_factor) {
+  if(freq > 12000.0f && freq <= 16000.0f) {
+    /* Preserve some stereo width in high frequencies */
+    float preservation = 0.3f * width_factor;
+    if(preservation > 0.5f) preservation = 0.5f;
+    
+    /* Apply width preservation to angle component */
+    *ang *= preservation;
+  }
 }
 
 static void flag_lossless(int limit, float prepoint, float postpoint, float *mdct,
@@ -1125,11 +1268,28 @@ void _vp_couple_quantize_normalize(int blobno,
         for(j=0;j<jn;j++){
 
           if(j<sliding_lowpass-i){
+            /* Apply high-frequency boost mitigation */
+            float hf_factor = hf_boost_mitigation(i+j, limit, n, p->rate);
+            
             if(fM[j] || fA[j]){
-              /* lossless coupling */
-
-              reM[j] = fabs(reM[j])+fabs(reA[j]);
-              qeM[j] = qeM[j]+qeA[j];
+              /* Enhanced lossless coupling with high-frequency protection */
+              float orig_rM = reM[j];
+              float orig_rA = reA[j];
+              float freq = (float)((i+j) * p->rate) / (2.0f * n);
+              
+              couple_lossless(&reM[j], &reA[j], &qeM[j], &qeA[j]);
+              
+              /* Preserve stereo width for high frequencies */
+              preserve_stereo_width(&reM[j], &reA[j], freq, 1.0f);
+              
+              /* Apply high-frequency mitigation */
+              if(hf_factor < 1.0f) {
+                reM[j] = orig_rM + (reM[j] - orig_rM) * hf_factor;
+                reA[j] = orig_rA + (reA[j] - orig_rA) * hf_factor;
+                qeM[j] = reM[j] * reM[j];
+                qeA[j] = reA[j] * reA[j];
+              }
+              
               fM[j]=fA[j]=1;
 
               /* couple iM/iA */
@@ -1149,39 +1309,35 @@ void _vp_couple_quantize_normalize(int blobno,
                   iA[j]= -iA[j];
                   iM[j]= -iM[j];
                 }
-
               }
 
             }else{
-              /* lossy (point) coupling */
+              /* Enhanced lossy (point) coupling with high-frequency protection */
               if(j<limit-i){
                 /* dipole */
                 reM[j] += reA[j];
                 qeM[j] = fabs(reM[j]);
               }else{
-#if 0
-                /* AoTuV */
-                /** @ M2 **
-                    The boost problem by the combination of noise normalization and point stereo is eased.
-                    However, this is a temporary patch.
-                    by Aoyumi @ 2004/04/18
-                */
-                float derate = (1.0 - de*((float)(j-limit+i) / (float)(n-limit)));
-                /* elliptical */
+                /* Use precomputed coupling point for better high-frequency handling */
+                float premag = fabs(reM[j]) + fabs(reA[j]);
+                float mag, ang;
+                
+                precomputed_couple_point(premag, 
+                                       (int)(floor[Mi][j]), 
+                                       (int)(floor[Ai][j]), 
+                                       &mag, &ang);
+                
+                /* Apply high-frequency mitigation to reduce boost artifacts */
+                mag *= hf_factor;
+                
+                /* elliptical coupling with mitigation */
                 if(reM[j]+reA[j]<0){
-                  reM[j] = - (qeM[j] = (fabs(reM[j])+fabs(reA[j]))*derate*derate);
+                  reM[j] = -mag;
+                  qeM[j] = mag;
                 }else{
-                  reM[j] =   (qeM[j] = (fabs(reM[j])+fabs(reA[j]))*derate*derate);
+                  reM[j] = mag;
+                  qeM[j] = mag;
                 }
-#else
-                /* elliptical */
-                if(reM[j]+reA[j]<0){
-                  reM[j] = - (qeM[j] = fabs(reM[j])+fabs(reA[j]));
-                }else{
-                  reM[j] =   (qeM[j] = fabs(reM[j])+fabs(reA[j]));
-                }
-#endif
-
               }
               reA[j]=qeA[j]=0.f;
               fA[j]=1;

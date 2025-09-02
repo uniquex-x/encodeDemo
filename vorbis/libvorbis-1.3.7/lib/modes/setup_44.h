@@ -65,10 +65,11 @@ static const int *_floor_mapping_44[]={
 };
 
 static const ve_setup_data_template ve_setup_44_stereo={
-  11,
+  12,
   rate_mapping_44_stereo,
   quality_mapping_44,
-  2,
+  //2, /*2为有损和无损混合模式*/
+  0,  /*0w为无损模式*/
   40000,
   50000,
 
