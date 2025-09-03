@@ -1,0 +1,38 @@
+{
+  "evaluation_info": {
+    "timestamp": "2025-09-03T14:45:55.779812",
+    "evaluator_type": "simple",
+    "total_files": 2,
+    "successful_evaluations": 2,
+    "failed_evaluations": 0
+  },
+  "quality_statistics": {
+    "quality_score": {
+      "mean": 4.902294286268897,
+      "min": 4.804588572537794,
+      "max": 5.0
+    },
+    "snr_db": {
+      "mean": 37.759826888191164,
+      "min": 15.767029367511885,
+      "max": 59.752624408870446
+    },
+    "correlation": {
+      "mean": 0.9933366102230934,
+      "min": 0.986673748444081,
+      "max": 0.9999994720021058
+    },
+    "pesq": {
+      "mean": 3.2676413883178386,
+      "min": 2.036517859165388,
+      "max": 4.4987649174702895
+    }
+  },
+  "quality_distribution": {
+    "excellent": 2,
+    "good": 0,
+    "fair": 0,
+    "poor": 0,
+    "bad": 0
+  }
+}
