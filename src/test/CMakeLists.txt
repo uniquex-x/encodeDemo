@@ -22,6 +22,8 @@ set(SOURCES
     flacEncoder.cpp
     mp3Encoder.cpp
     vorbisEncoder.cpp
+    AudioQualityAnalyzer.cpp
+    AudioFileLoader.cpp
 )
 
 # 导出编译命令
@@ -50,3 +52,30 @@ endif()
 
 # 复制测试音频文件到构建目录
 file(COPY samples DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+
+# 创建音质分析测试程序
+add_executable(audio_quality_test 
+    audio_quality_test.cpp
+    AudioQualityAnalyzer.cpp
+    AudioFileLoader.cpp
+)
+
+# 链接音质分析测试程序
+target_link_libraries(audio_quality_test
+    vorbisfile
+    vorbis
+    ogg
+)
+
+# 创建音频文件加载测试程序
+add_executable(audio_file_test
+    audio_file_test.cpp
+    AudioFileLoader.cpp
+)
+
+# 链接音频文件加载测试程序
+target_link_libraries(audio_file_test
+    vorbisfile
+    vorbis
+    ogg
+)

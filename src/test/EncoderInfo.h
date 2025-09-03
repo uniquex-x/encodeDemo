@@ -1,6 +1,13 @@
 #ifndef ENCODER_INFO_H
 #define ENCODER_INFO_H
 
+#include <string>
+
+// 前向声明
+struct ObjectiveQualityMetrics;
+struct PerceptualQualityMetrics;
+struct FrequencyAnalysis;
+
 enum class EncoderType{
     FLAC,
     VORBIS,
@@ -50,5 +57,33 @@ struct EncoderParamContext{
     FlacParamContext* FlacCtx;  //flac参数上下文
 };
 
+// 音质评估结果结构体
+struct AudioQualityResults {
+    // 客观音质指标
+    struct {
+        double snr = 0.0;                    // 信噪比 (dB)
+        double thd = 0.0;                    // 总谐波失真 (%)
+        double dynamicRange = 0.0;           // 动态范围 (dB)
+        double channelSeparation = 0.0;      // 声道分离度 (dB)
+        double stereoImaging = 0.0;          // 立体声成像质量 (0-1)
+    } objective;
+    
+    // 感知音质指标
+    struct {
+        double mos_score = 0.0;              // 平均意见分数 (1-5)
+        double loudness_lufs = 0.0;          // 响度LUFS值
+        double audio_quality_score = 0.0;    // 综合音质评分 (0-100)
+    } perceptual;
+    
+    // 频域分析
+    struct {
+        double spectral_centroid = 0.0;      // 频谱质心 (Hz)
+        double high_frequency_energy = 0.0;  // 高频能量比例 (%)
+        double spectral_flatness = 0.0;      // 频谱平坦度
+    } frequency;
+    
+    bool analysisPerformed = false;
+    std::string analysisError;
+};
 
 #endif

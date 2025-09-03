@@ -13,6 +13,9 @@ struct EncodeResult {
     double compressionRatio;
     std::chrono::milliseconds encodeTime;
     std::string errorMessage;
+    
+    // 新增：音质分析结果
+    AudioQualityResults qualityResults;
 };
 
 class Encoder {

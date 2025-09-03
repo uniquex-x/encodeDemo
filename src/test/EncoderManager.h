@@ -6,6 +6,7 @@
 #include <string>
 #include "EncoderInfo.h"
 #include "encoder.h"
+#include "AudioQualityAnalyzer.h"
 
 struct TestResult {
     std::string encoderName;
@@ -41,6 +42,11 @@ public:
     // 新增方法：测试改进的MP3编码器
     void testImprovedLameEncoder();
     
+    // 新增方法：音质分析
+    void enableQualityAnalysis(bool enable = true);
+    void analyzeEncodedFile(const std::string& originalFile, const std::string& encodedFile, EncodeResult& result);
+    void printQualityAnalysisReport(const AudioQualityResults& qualityResults);
+    
     // 工厂方法，创建编码器实例
     std::unique_ptr<Encoder> encoderCreate(EncoderType selectedEncoder);
 
@@ -56,6 +62,8 @@ private:
     std::unique_ptr<Encoder> encoder;
     std::vector<TestResult> results;
     std::string testAudioFile;
+    bool qualityAnalysisEnabled;
+    std::unique_ptr<AudioQualityAnalyzer> qualityAnalyzer;
 };
 
 #endif

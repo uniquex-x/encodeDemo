@@ -108,12 +108,17 @@ void showEncodersInfo(EncoderManager& encoderManager) {
     encoderManager.showAllEncodersInfo();
 }
 
-int main() {
+int main(int argc, char* argv[]) {
     std::cout << "音频编码算法性能对比测试程序" << std::endl;
     std::cout << "对比测试 FLAC、Vorbis、MP3(LAME) 三个编码算法性能" << std::endl;
     std::cout << std::string(60, '=') << std::endl;
 
-    std::string inputFile = "samples/natureStory.wav";
+    if (argc < 2) {
+        std::cout << "请提供输入音频文件路径。" << std::endl;
+        return 1;
+    }
+
+    std::string inputFile = argv[1];
     std::cout << "测试音频文件: " << inputFile << std::endl;
 
     // 创建测试实例
