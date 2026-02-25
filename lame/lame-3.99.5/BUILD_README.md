@@ -315,24 +315,6 @@ target_link_libraries(your_target PRIVATE ${LAME_LIBRARY})
 
 ### 3. Android项目集成
 
-#### Android.mk方式
-```makefile
-LOCAL_PATH := $(call my-dir)
-
-# 预编译库
-include $(CLEAR_VARS)
-LOCAL_MODULE := mp3lame
-LOCAL_SRC_FILES := libs/$(TARGET_ARCH_ABI)/libmp3lame.so
-include $(PREBUILT_SHARED_LIBRARY)
-
-# 你的应用
-include $(CLEAR_VARS)
-LOCAL_MODULE := your_app
-LOCAL_SRC_FILES := your_app.c
-LOCAL_SHARED_LIBRARIES := mp3lame
-include $(BUILD_SHARED_LIBRARY)
-```
-
 #### CMakeLists.txt方式
 ```cmake
 # 添加预编译库

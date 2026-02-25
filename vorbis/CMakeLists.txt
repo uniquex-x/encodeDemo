@@ -102,10 +102,13 @@ ExternalProject_Add(
 set(VORBIS_CMAKE_ARGS ${COMMON_CMAKE_ARGS})
 list(APPEND VORBIS_CMAKE_ARGS
     -DINSTALL_CMAKE_PACKAGE_MODULE=ON
+    # Hint FindOgg and force CMP0074 so *_ROOT is honored
     -DOgg_ROOT=${INSTALL_PREFIX}
+    -DCMAKE_POLICY_DEFAULT_CMP0074=NEW #CMake 会优先在Ogg_ROOT下查找ogg。
     -DCMAKE_PREFIX_PATH=${INSTALL_PREFIX}
-    -DOGG_INCLUDE_DIRS=${INSTALL_PREFIX}/include
-    -DOGG_LIBRARIES=${INSTALL_PREFIX}/lib
+    # Directly provide resolved paths for robustness
+    -DOGG_INCLUDE_DIR=${INSTALL_PREFIX}/include
+    -DOGG_LIBRARY=${INSTALL_PREFIX}/lib/libogg.so #这里直接假定libogg后缀是so了，但是mac平台和windows都不是
 )
 
 ExternalProject_Add(
