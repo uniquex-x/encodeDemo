@@ -24,10 +24,6 @@
 - **vorbis**: Vorbis音频编码器源码及编译脚本
   - 也提供了交叉编译脚本，具体可查看README.md. 支持macOS平台编译输出mac、android64位、android32位、windows平台动态库
 
-**注：**
-- vorbis中提供quick_build.sh提供了交互逻辑，lame没有提供交互逻辑
-- 默认ogg库后缀为so情况下，用mingw编译windows下的vorbis dll库可能会报错？
-
 **(2) 项目目录树**
 ```
 compileScript/
@@ -62,18 +58,7 @@ compileScript/
 ### 编译和运行
 
 **(1) 编译各编码器库**
-```bash
-# 编译FLAC (在flac/flac-1.5.0目录下)
-mkdir build && cd build
-cmake .. && make
-
-# 编译LAME (在lame/lame-3.99.5目录下)
-mkdir build && cd build
-../configure --prefix=$(pwd)/install && make && make install
-
-# 编译Vorbis (在vorbis目录下)
-./quick_build.sh  # 或使用build_macos.sh
-```
+具体查看各个编码算法目录下的readme文件
 
 **(2) 编译测试程序**
 ```bash
