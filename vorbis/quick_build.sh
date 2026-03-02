@@ -45,6 +45,7 @@ show_menu() {
     echo "5) Linux 原生构建"
     echo "6) 清理所有构建产物"
     echo "7) 显示构建帮助"
+    echo "8) Windows 交叉编译 (MinGW-w64)"
     echo "0) 退出"
     echo
 }
@@ -79,7 +80,7 @@ execute_build() {
 main() {
     while true; do
         show_menu
-        echo -n "请选择 (0-7): "
+        echo -n "请选择 (0-8): "
         read -r choice
         
         case $choice in
@@ -112,6 +113,10 @@ main() {
                 ;;
             7)
                 execute_build "./build_vorbis.sh --help"
+                ;;
+            8)
+                print_info "Windows 交叉编译 (MinGW-w64)"
+                execute_build "./build_vorbis.sh --platform windows"
                 ;;
             0)
                 print_success "退出"

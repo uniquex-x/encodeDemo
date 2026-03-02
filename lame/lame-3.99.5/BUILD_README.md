@@ -109,13 +109,13 @@ cmake .. \
 ### Android构建
 ```bash
 # 设置NDK路径
-export ANDROID_NDK=/path/to/android-ndk
+export ANDROID_NDK_PATH=/path/to/android-ndk
 
 # ARMv8 (arm64-v8a)
 ./build_lame.sh \
     --platform android \
     --arch armv8 \
-    --ndk-path $ANDROID_NDK \
+    --ndk-path $ANDROID_NDK_PATH \
     --api-level 21
 
 # ARMv7 (armeabi-v7a) 

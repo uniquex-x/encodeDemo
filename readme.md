@@ -14,16 +14,19 @@
 
 ### 项目目录介绍
 **(1) 简单概述**
-*相比原项目采用configure编译项目，我们在vorbis,flac均利用**bash脚本+cmake**实现了多平台输出且支持交叉编译能力*
+*相比原项目采用configure编译项目，我们在vorbis,flac均利用**bash脚本+cmake**实现了多平台输出且支持交叉编译*
 - **flac**: FLAC无损音频编码器源码及编译脚本
   - 没有写交叉编译的脚本，要编译平台端库，直接使用自带的CMakeLists.txt即可.支持macOS平台编译输出mac动态库
   - 交叉编译功能待实现
 - **lame**: LAME MP3编码器源码及编译脚本
-  - 有交叉编译教程，具体可查看BUILD_README.md. 支持macOS平台编译输出mac、android64位、android32位、windows(待验证)动态库
+  - 有交叉编译教程，具体可查看BUILD_README.md. 支持macOS平台编译输出mac、android64位、android32位、windows动态库
   - 有windows端脚本
 - **vorbis**: Vorbis音频编码器源码及编译脚本
   - 也提供了交叉编译脚本，具体可查看README.md. 支持macOS平台编译输出mac、android64位、android32位、
-注：vorbis中提供quick_build.sh提供了交互逻辑，lame没有提供交互逻辑
+
+**注：**
+- vorbis中提供quick_build.sh提供了交互逻辑，lame没有提供交互逻辑
+- 默认ogg库后缀为so情况下，用mingw编译windows下的vorbis dll库可能会报错？
 
 **(2) 项目目录树**
 ```

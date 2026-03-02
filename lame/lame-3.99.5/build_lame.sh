@@ -43,6 +43,7 @@ SHARED_LIBS="ON"
 WITH_FRONTEND="ON"
 WITH_DECODER="ON"
 INSTALL_PREFIX="${BUILD_ROOT}/install"
+INSTALL_PREFIX_USER_SET=0
 
 # Android NDK配置
 ANDROID_NDK_PATH=""
@@ -84,7 +85,7 @@ LAME 跨平台构建脚本
   -s, --shared               构建共享库 (ON|OFF, 默认: ON)
   -f, --frontend             构建前端工具 (ON|OFF, 默认: ON)
   -d, --decoder              包含MP3解码器 (ON|OFF, 默认: ON)
-  -i, --install-prefix PATH  安装路径 (默认: build/install)
+    -i, --install-prefix PATH  安装路径 (默认: build/<platform>-<arch>/install)
   -n, --ndk-path PATH        Android NDK路径 (Android构建需要)
   -l, --api-level LEVEL      Android API级别 (默认: 21)
   -c, --clean                清理构建目录
@@ -111,43 +112,63 @@ LAME 跨平台构建脚本
 EOF
 }
 
-# 解析命令行参数
+# 解析命令行参数（带值校验，避免漏填导致错位）
+require_value() {
+    local opt="$1"; shift
+    local val="$1"
+    if [[ -z "$val" || "$val" == -* ]]; then
+        print_error "选项 ${opt} 需要一个值"
+        show_help
+        exit 1
+    fi
+}
+
 parse_args() {
     while [[ $# -gt 0 ]]; do
         case $1 in
             -p|--platform)
+                require_value "$1" "$2"
                 TARGET_PLATFORM="$2"
                 shift 2
                 ;;
             -a|--arch)
+                require_value "$1" "$2"
                 TARGET_ARCH="$2"
                 shift 2
                 ;;
             -t|--build-type)
+                require_value "$1" "$2"
                 BUILD_TYPE="$2"
                 shift 2
                 ;;
             -s|--shared)
+                require_value "$1" "$2"
                 SHARED_LIBS="$2"
                 shift 2
                 ;;
             -f|--frontend)
+                require_value "$1" "$2"
                 WITH_FRONTEND="$2"
                 shift 2
                 ;;
             -d|--decoder)
+                require_value "$1" "$2"
                 WITH_DECODER="$2"
                 shift 2
                 ;;
             -i|--install-prefix)
+                require_value "$1" "$2"
                 INSTALL_PREFIX="$2"
+                INSTALL_PREFIX_USER_SET=1
                 shift 2
                 ;;
             -n|--ndk-path)
+                require_value "$1" "$2"
                 ANDROID_NDK_PATH="$2"
                 shift 2
                 ;;
             -l|--api-level)
+                require_value "$1" "$2"
                 ANDROID_API_LEVEL="$2"
                 shift 2
                 ;;
@@ -368,6 +389,10 @@ setup_android_toolchain() {
 setup_build_dir() {
     local build_suffix="${TARGET_PLATFORM}-${TARGET_ARCH}"
     BUILD_DIR="${BUILD_ROOT}/${build_suffix}"
+
+    if [[ $INSTALL_PREFIX_USER_SET -eq 0 ]]; then
+        INSTALL_PREFIX="${BUILD_DIR}/install"
+    fi
     
     if [[ -n "$CLEAN_BUILD" ]] && [[ -d "$BUILD_DIR" ]]; then
         print_info "清理构建目录: $BUILD_DIR"
