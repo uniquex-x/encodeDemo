@@ -45,7 +45,8 @@ show_menu() {
     echo "5) Linux 原生构建"
     echo "6) 清理所有构建产物"
     echo "7) 显示构建帮助"
-    echo "8) Windows 交叉编译 (MinGW-w64)"
+    echo "8) Windows 交叉编译 x86_64 (MinGW-w64)"
+    echo "9) Windows 交叉编译 x86 (MinGW-w64)"
     echo "0) 退出"
     echo
 }
@@ -80,7 +81,7 @@ execute_build() {
 main() {
     while true; do
         show_menu
-        echo -n "请选择 (0-8): "
+        echo -n "请选择 (0-9): "
         read -r choice
         
         case $choice in
@@ -115,15 +116,21 @@ main() {
                 execute_build "./build_vorbis.sh --help"
                 ;;
             8)
-                print_info "Windows 交叉编译 (MinGW-w64)"
-                execute_build "./build_vorbis.sh --platform windows"
+                print_info "Windows 交叉编译 x86_64 (MinGW-w64)"
+                print_info "提示: 需要安装 mingw-w64，如未安装请运行: brew install mingw-w64"
+                execute_build "./build_vorbis.sh --platform windows --windows-arch x86_64"
+                ;;
+            9)
+                print_info "Windows 交叉编译 x86 (MinGW-w64)"
+                print_info "提示: 需要安装 mingw-w64，如未安装请运行: brew install mingw-w64"
+                execute_build "./build_vorbis.sh --platform windows --windows-arch x86"
                 ;;
             0)
                 print_success "退出"
                 exit 0
                 ;;
             *)
-                print_error "无效选择，请输入 0-7"
+                print_error "无效选择，请输入 0-9"
                 ;;
         esac
         

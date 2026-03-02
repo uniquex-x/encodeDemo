@@ -43,6 +43,7 @@ Ogg Vorbis 音频库交叉编译脚本
     --platform PLATFORM     指定目标平台 (android|macos|linux|windows)
     --android-abi ABI        Android架构 (arm64-v8a|armeabi-v7a|all)
     --android-ndk PATH       Android NDK路径
+    --windows-arch ARCH      Windows目标架构 (x86_64|x86) [默认: x86_64]
     --build-type TYPE        构建类型 (Release|Debug) [默认: Release]
     --shared                 构建动态库 [默认]
     --static                 构建静态库
@@ -62,6 +63,10 @@ Ogg Vorbis 音频库交叉编译脚本
     # Linux原生构建
     $0 --platform linux
 
+    # Windows交叉编译 (需要安装 mingw-w64: brew install mingw-w64)
+    $0 --platform windows
+    $0 --platform windows --windows-arch x86 --static
+
     # 清理构建产物
     $0 --clean
 
@@ -75,6 +80,7 @@ EOF
 PLATFORM=""
 ANDROID_ABI="arm64-v8a"
 ANDROID_NDK_PATH=""
+WINDOWS_ARCH="x86_64"
 BUILD_TYPE="Release"
 BUILD_SHARED=ON
 CLEAN_BUILD=false
@@ -92,6 +98,10 @@ while [[ $# -gt 0 ]]; do
             ;;
         --android-ndk)
             ANDROID_NDK_PATH="$2"
+            shift 2
+            ;;
+        --windows-arch)
+            WINDOWS_ARCH="$2"
             shift 2
             ;;
         --build-type)
@@ -194,6 +204,19 @@ if [ "$PLATFORM" = "android" ]; then
     esac
 fi
 
+# Windows特定验证
+if [ "$PLATFORM" = "windows" ]; then
+    case "$WINDOWS_ARCH" in
+        x86_64|x86)
+            ;;
+        *)
+            print_error "不支持的Windows架构: $WINDOWS_ARCH"
+            print_error "支持的架构: x86_64, x86"
+            exit 1
+            ;;
+    esac
+fi
+
 # 验证构建类型
 case "$BUILD_TYPE" in
     Release|Debug)
@@ -234,13 +257,36 @@ check_dependencies() {
     fi
     
     # 检查编译器
-    if command -v clang &> /dev/null; then
-        print_info "发现编译器: $(which clang)"
-    elif command -v gcc &> /dev/null; then
-        print_info "发现编译器: $(which gcc)"
+    if [ "$PLATFORM" = "windows" ]; then
+        # Windows 交叉编译需要 MinGW-w64
+        if [ "$WINDOWS_ARCH" = "x86_64" ]; then
+            MINGW_CC="x86_64-w64-mingw32-gcc"
+            MINGW_CXX="x86_64-w64-mingw32-g++"
+            MINGW_RC="x86_64-w64-mingw32-windres"
+        else
+            MINGW_CC="i686-w64-mingw32-gcc"
+            MINGW_CXX="i686-w64-mingw32-g++"
+            MINGW_RC="i686-w64-mingw32-windres"
+        fi
+
+        if ! command -v "$MINGW_CC" &> /dev/null; then
+            print_error "未找到 MinGW-w64 交叉编译器: $MINGW_CC"
+            print_error "请先安装 mingw-w64:"
+            print_error "  macOS:  brew install mingw-w64"
+            print_error "  Ubuntu: sudo apt install mingw-w64"
+            exit 1
+        fi
+        print_info "发现 MinGW-w64 C编译器:   $(which $MINGW_CC)"
+        print_info "发现 MinGW-w64 C++编译器: $(which $MINGW_CXX)"
     else
-        print_error "需要C编译器 (clang或gcc)"
-        exit 1
+        if command -v clang &> /dev/null; then
+            print_info "发现编译器: $(which clang)"
+        elif command -v gcc &> /dev/null; then
+            print_info "发现编译器: $(which gcc)"
+        else
+            print_error "需要C编译器 (clang或gcc)"
+            exit 1
+        fi
     fi
     
     print_success "依赖检查通过"
@@ -278,8 +324,33 @@ build_single_arch() {
         -DBUILD_SHARED_LIBS="$BUILD_SHARED"
     )
     
-    # 明确设置编译器（避免编译器检测问题）
-    if [ "$PLATFORM" != "android" ]; then
+    # 根据平台设置编译器和工具链
+    if [ "$PLATFORM" = "android" ]; then
+        # Android: 使用 NDK 工具链文件，不手动指定编译器
+        CMAKE_ARGS+=(
+            -DBUILD_ANDROID=ON
+            -DANDROID_NDK="$ANDROID_NDK_PATH"
+            -DANDROID_ABI="$arch"
+        )
+    elif [ "$PLATFORM" = "windows" ]; then
+        # Windows 交叉编译: 使用 MinGW-w64 工具链
+        if [ "$WINDOWS_ARCH" = "x86_64" ]; then
+            local mingw_cc="x86_64-w64-mingw32-gcc"
+            local mingw_cxx="x86_64-w64-mingw32-g++"
+            local mingw_rc="x86_64-w64-mingw32-windres"
+        else
+            local mingw_cc="i686-w64-mingw32-gcc"
+            local mingw_cxx="i686-w64-mingw32-g++"
+            local mingw_rc="i686-w64-mingw32-windres"
+        fi
+        CMAKE_ARGS+=(
+            -DCMAKE_SYSTEM_NAME=Windows
+            -DCMAKE_C_COMPILER="$mingw_cc"
+            -DCMAKE_CXX_COMPILER="$mingw_cxx"
+            -DCMAKE_RC_COMPILER="$mingw_rc"
+        )
+    else
+        # macOS / Linux: 明确设置本机编译器（避免编译器检测问题）
         if command -v clang &> /dev/null; then
             CMAKE_ARGS+=(-DCMAKE_C_COMPILER=clang)
             CMAKE_ARGS+=(-DCMAKE_CXX_COMPILER=clang++)
@@ -287,14 +358,6 @@ build_single_arch() {
             CMAKE_ARGS+=(-DCMAKE_C_COMPILER=gcc)
             CMAKE_ARGS+=(-DCMAKE_CXX_COMPILER=g++)
         fi
-    fi
-    
-    if [ "$PLATFORM" = "android" ]; then
-        CMAKE_ARGS+=(
-            -DBUILD_ANDROID=ON
-            -DANDROID_NDK="$ANDROID_NDK_PATH"
-            -DANDROID_ABI="$arch"
-        )
     fi
     
     # 检测构建系统 - 优先使用make避免depot_tools ninja的问题

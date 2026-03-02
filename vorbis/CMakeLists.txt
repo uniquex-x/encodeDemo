@@ -55,7 +55,13 @@ file(MAKE_DIRECTORY ${INSTALL_PREFIX}/lib)
 file(MAKE_DIRECTORY ${INSTALL_PREFIX}/include)
 
 # ====== 通用编译参数 ======
-set(COMMON_C_FLAGS "-fPIC")
+# Windows (MinGW) 不需要 -fPIC；其他平台（Android、Linux、macOS）需要
+if(WIN32)
+    set(COMMON_C_FLAGS "")
+else()
+    set(COMMON_C_FLAGS "-fPIC")
+endif()
+
 set(COMMON_CMAKE_ARGS
     -DCMAKE_INSTALL_PREFIX=${INSTALL_PREFIX}
     -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
@@ -82,6 +88,40 @@ if(BUILD_ANDROID)
     endif()
 endif()
 
+# ====== Windows 交叉编译工具链透传 ======
+# 外层 CMake 已通过 -DCMAKE_SYSTEM_NAME=Windows / -DCMAKE_C_COMPILER=... 初始化了编译器，
+# 这里将这些变量透传给 ExternalProject 的每个子构建，使 libogg/libvorbis 也使用 MinGW-w64。
+if(WIN32 AND NOT BUILD_ANDROID)
+    list(APPEND COMMON_CMAKE_ARGS
+        -DCMAKE_SYSTEM_NAME=Windows
+        -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
+        -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
+    )
+    # windres 可能未设置（C-only 项目不需要），有就透传
+    if(CMAKE_RC_COMPILER)
+        list(APPEND COMMON_CMAKE_ARGS -DCMAKE_RC_COMPILER=${CMAKE_RC_COMPILER})
+    endif()
+
+    # ---- 修正 libvorbis win32/.def 文件以兼容 MinGW-w64 ----
+    # libvorbis 源码中的 .def 文件使用了裸 "LIBRARY" 关键字（无库名），
+    # MSVC 链接器可通过输出文件名推断，但 MinGW-w64 ld 不支持此格式，会报 syntax error。
+    # 这里在配置阶段将其补全为 "LIBRARY <name>"，改动是幂等的，对 MSVC 也无影响。
+    foreach(_def_name vorbis vorbisenc vorbisfile)
+        set(_def_file "${CMAKE_CURRENT_SOURCE_DIR}/libvorbis-1.3.7/win32/${_def_name}.def")
+        if(EXISTS "${_def_file}")
+            file(READ "${_def_file}" _def_contents)
+            # 替换独立成行的 "LIBRARY"（后面没有跟任何非换行字符）
+            string(REPLACE "\nLIBRARY\n" "\nLIBRARY ${_def_name}\n" _def_contents "${_def_contents}")
+            # 兼容文件以 LIBRARY 开头（极少见）
+            if(_def_contents MATCHES "^LIBRARY\n")
+                string(REPLACE "LIBRARY\n" "LIBRARY ${_def_name}\n" _def_contents "${_def_contents}")
+            endif()
+            file(WRITE "${_def_file}" "${_def_contents}")
+            message(STATUS "Patched win32/${_def_name}.def for MinGW-w64 (added library name)")
+        endif()
+    endforeach()
+endif()
+
 # ====== 构建libogg ======
 ExternalProject_Add(
     libogg
@@ -97,6 +137,23 @@ ExternalProject_Add(
     LOG_INSTALL     TRUE
 )
 
+# ====== 确定OGG库文件名（根据目标平台和库类型）======
+# WIN32 在传入 -DCMAKE_SYSTEM_NAME=Windows 时也会为 TRUE，适用于 macOS 交叉编译到 Windows
+if(BUILD_SHARED_LIBS)
+    if(WIN32)
+        # MinGW 交叉编译：链接时使用导入库 (.dll.a)，实际 DLL 为 libogg.dll
+        set(OGG_LIB_FILENAME "libogg.dll.a")
+    elseif(APPLE AND NOT BUILD_ANDROID)
+        set(OGG_LIB_FILENAME "libogg.dylib")
+    else()
+        # Android 和 Linux
+        set(OGG_LIB_FILENAME "libogg.so")
+    endif()
+else()
+    set(OGG_LIB_FILENAME "libogg.a")
+endif()
+message(STATUS "OGG library filename: ${OGG_LIB_FILENAME}")
+
 # ====== 构建libvorbis ======
 # 设置vorbis查找ogg的路径
 set(VORBIS_CMAKE_ARGS ${COMMON_CMAKE_ARGS})
@@ -108,8 +165,19 @@ list(APPEND VORBIS_CMAKE_ARGS
     -DCMAKE_PREFIX_PATH=${INSTALL_PREFIX}
     # Directly provide resolved paths for robustness
     -DOGG_INCLUDE_DIR=${INSTALL_PREFIX}/include
-    -DOGG_LIBRARY=${INSTALL_PREFIX}/lib/libogg.so #这里直接假定libogg后缀是so了，但是mac平台和windows都不是
+    -DOGG_LIBRARY=${INSTALL_PREFIX}/lib/${OGG_LIB_FILENAME}
 )
+
+# ====== Windows 交叉编译额外配置 ======
+# 确保 libvorbis 的 FindOgg 只在交叉编译的 sysroot（INSTALL_PREFIX）内查找
+if(WIN32)
+    list(APPEND VORBIS_CMAKE_ARGS
+        -DCMAKE_FIND_ROOT_PATH=${INSTALL_PREFIX}
+        -DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=ONLY
+        -DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY
+        -DCMAKE_FIND_ROOT_PATH_MODE_PACKAGE=ONLY
+    )
+endif()
 
 ExternalProject_Add(
     libvorbis
