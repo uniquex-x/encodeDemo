@@ -215,6 +215,14 @@ setup_toolchain() {
                 err "Android toolchain file missing: $toolchain_file"; exit 1
             fi
             cmake_args+=" -DCMAKE_SYSTEM_NAME=Android"
+            # NDK r26 still defaults to the legacy toolchain file, which ignores
+            # CMAKE_ANDROID_ARCH_ABI during the initial configure unless the
+            # legacy ANDROID_* variables are also provided.
+            cmake_args+=" -DANDROID_USE_LEGACY_TOOLCHAIN_FILE=FALSE"
+            cmake_args+=" -DANDROID_NDK=${android_ndk}"
+            cmake_args+=" -DANDROID_ABI=${android_abi}"
+            cmake_args+=" -DANDROID_PLATFORM=android-${android_api}"
+            cmake_args+=" -DANDROID_STL=${android_stl}"
             cmake_args+=" -DCMAKE_ANDROID_NDK=${android_ndk}"
             cmake_args+=" -DCMAKE_ANDROID_ARCH_ABI=${android_abi}"
             cmake_args+=" -DCMAKE_ANDROID_API=${android_api}"
@@ -263,12 +271,13 @@ build_project() {
     cd "$build_dir"
     local jobs
     if command -v nproc >/dev/null 2>&1; then
-        jobs=$(nproc)
+        jobs=$(nproc 2>/dev/null || echo 4)
     elif command -v sysctl >/dev/null 2>&1; then
-        jobs=$(sysctl -n hw.ncpu)
+        jobs=$(sysctl -n hw.ncpu 2>/dev/null || echo 4)
     else
         jobs=4
     fi
+    [[ -n "$jobs" ]] || jobs=4
     cmake --build . --config ${build_type} --parallel ${jobs}
 }
 

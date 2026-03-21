@@ -365,6 +365,13 @@ setup_android_toolchain() {
     fi
     
     CMAKE_ARGS="$CMAKE_ARGS -DCMAKE_SYSTEM_NAME=Android"
+    # NDK r26 still defaults to the legacy toolchain file, which falls back to
+    # armeabi-v7a unless the legacy ANDROID_* variables are set explicitly.
+    CMAKE_ARGS="$CMAKE_ARGS -DANDROID_USE_LEGACY_TOOLCHAIN_FILE=FALSE"
+    CMAKE_ARGS="$CMAKE_ARGS -DANDROID_NDK=$ANDROID_NDK_PATH"
+    CMAKE_ARGS="$CMAKE_ARGS -DANDROID_ABI=$android_abi"
+    CMAKE_ARGS="$CMAKE_ARGS -DANDROID_PLATFORM=android-$ANDROID_API_LEVEL"
+    CMAKE_ARGS="$CMAKE_ARGS -DANDROID_STL=$ANDROID_STL"
     CMAKE_ARGS="$CMAKE_ARGS -DCMAKE_ANDROID_NDK=$ANDROID_NDK_PATH"
     CMAKE_ARGS="$CMAKE_ARGS -DCMAKE_ANDROID_ARCH_ABI=$android_abi"
     CMAKE_ARGS="$CMAKE_ARGS -DCMAKE_ANDROID_API=$ANDROID_API_LEVEL"
@@ -442,13 +449,14 @@ build_project() {
     
     # 获取CPU核心数
     if command -v nproc >/dev/null 2>&1; then
-        JOBS=$(nproc)
+        JOBS=$(nproc 2>/dev/null || echo 4)
     elif command -v sysctl >/dev/null 2>&1; then
-        JOBS=$(sysctl -n hw.ncpu)
+        JOBS=$(sysctl -n hw.ncpu 2>/dev/null || echo 4)
     else
         JOBS=4
     fi
-    
+    [[ -n "$JOBS" ]] || JOBS=4
+
     cmake --build . --config $BUILD_TYPE --parallel $JOBS
     
     if [[ $? -eq 0 ]]; then
